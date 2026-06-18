@@ -19,32 +19,32 @@ public class UserRepository {
 
     private final RowMapper<User> userRowMapper = (rs, rowNum) -> {
 
-        User user = new User();
+        User users = new User();
 
-        user.setUserId(rs.getInt("User_id"));
-        user.setUsername(rs.getString("username"));
-        user.setPassword(rs.getString("password"));
-        user.setRole(
+        users.setUserId(rs.getInt("User_id"));
+        users.setUsername(rs.getString("username"));
+        users.setPassword(rs.getString("password"));
+        users.setRole(
                 Role.valueOf(
                         rs.getString("role")
                 )
         );
 
         if (rs.getTimestamp("created_at") != null) {
-            user.setCreatedAt(
+            users.setCreatedAt(
                     rs.getTimestamp("created_at")
                             .toLocalDateTime()
             );
         }
 
-        return user;
+        return users;
     };
 
     public List<User> findAll() {
 
         String sql = """
                 SELECT *
-                FROM user
+                FROM users
                 ORDER BY User_id
                 """;
 
@@ -55,7 +55,7 @@ public class UserRepository {
 
         String sql = """
                 SELECT *
-                FROM user
+                FROM users
                 WHERE User_id = ?
                 """;
 
@@ -72,7 +72,7 @@ public class UserRepository {
     public int save(User user) {
 
         String sql = """
-                INSERT INTO user
+                INSERT INTO users
                 (
                     username,
                     password,
@@ -92,10 +92,30 @@ public class UserRepository {
     public int delete(Integer id) {
 
         String sql = """
-                DELETE FROM user
+                DELETE FROM users
                 WHERE User_id = ?
                 """;
 
         return jdbcTemplate.update(sql, id);
+    }
+
+    public User findByUsername(String username) {
+
+        String sql = """
+            SELECT *
+            FROM users
+            WHERE username = ?
+            """;
+
+        List<User> users =
+                jdbcTemplate.query(
+                        sql,
+                        userRowMapper,
+                        username
+                );
+
+        return users.isEmpty()
+                ? null
+                : users.get(0);
     }
 }
