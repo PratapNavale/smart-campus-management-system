@@ -96,6 +96,13 @@ public class SecurityConfig {
                                 "ADMIN",
                                 "FACULTY"
                         )
+                        .requestMatchers(
+                                "/api/faculties/**"
+                        )
+                        .hasAnyRole(
+                                "ADMIN",
+                                "FACULTY"
+                        )
 
                         .anyRequest()
                         .authenticated()
