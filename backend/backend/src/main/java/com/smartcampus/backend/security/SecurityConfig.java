@@ -96,6 +96,47 @@ public class SecurityConfig {
                                 "ADMIN",
                                 "FACULTY"
                         )
+
+                        .requestMatchers(
+                                "/api/courses/**"
+                        )
+                        .hasAnyRole(
+                                "ADMIN",
+                                "FACULTY"
+                        )
+
+                        .requestMatchers(
+                                "/api/enrollments/**"
+                        )
+                        .hasAnyRole(
+                                "ADMIN",
+                                "FACULTY"
+                        )
+
+                        .requestMatchers(
+                                "/api/attendance/**"
+                        )
+                        .hasAnyRole(
+                                "ADMIN",
+                                "FACULTY"
+                        )
+
+                        .requestMatchers(
+                                "/api/payments/**"
+                        )
+                        .hasAnyRole(
+                                "ADMIN",
+                                "FACULTY"
+                        )
+
+                        .requestMatchers(
+                                "/api/hostel-rooms/**"
+                        )
+                        .hasAnyRole(
+                                "ADMIN",
+                                "FACULTY"
+                        )
+
                         .requestMatchers(
                                 "/api/faculties/**"
                         )
