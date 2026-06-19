@@ -12,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.security.web.SecurityFilterChain;
 
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
+
 import org.springframework.security.web.authentication.
         UsernamePasswordAuthenticationFilter;
 
@@ -21,11 +24,26 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter
             jwtAuthenticationFilter;
 
+    private final JwtAuthenticationEntryPoint
+            authenticationEntryPoint;
+
+    private final CustomAccessDeniedHandler
+            accessDeniedHandler;
+
     public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            JwtAuthenticationEntryPoint authenticationEntryPoint,
+            CustomAccessDeniedHandler accessDeniedHandler
     ) {
+
         this.jwtAuthenticationFilter =
                 jwtAuthenticationFilter;
+
+        this.authenticationEntryPoint =
+                authenticationEntryPoint;
+
+        this.accessDeniedHandler =
+                accessDeniedHandler;
     }
 
     @Bean
@@ -49,11 +67,35 @@ public class SecurityConfig {
                         )
                 )
 
+                .exceptionHandling(exception ->
+
+                        exception
+
+                                .authenticationEntryPoint(
+                                        authenticationEntryPoint
+                                )
+
+                                .accessDeniedHandler(
+                                        accessDeniedHandler
+                                )
+                )
+
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers(
                                 "/api/auth/**"
                         ).permitAll()
+
+                        .requestMatchers(
+                                "/api/users/**"
+                        ).hasRole("ADMIN")
+
+                        .requestMatchers(
+                                "/api/students/**"
+                        ).hasAnyRole(
+                                "ADMIN",
+                                "FACULTY"
+                        )
 
                         .anyRequest()
                         .authenticated()

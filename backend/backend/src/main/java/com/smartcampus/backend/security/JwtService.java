@@ -3,35 +3,53 @@ package com.smartcampus.backend.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY =
-            "SmartCampusSecretKeyForJwtAuthentication2026SmartCampus";
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
 
     private SecretKey getSigningKey() {
 
         return Keys.hmacShaKeyFor(
-                SECRET_KEY.getBytes()
+                secretKey.getBytes()
         );
     }
 
     public String generateToken(
-            String username
+            String username,
+            String role
     ) {
 
+        Map<String, Object> claims =
+                new HashMap<>();
+
+        claims.put(
+                "role",
+                role
+        );
+
         return Jwts.builder()
+                .claims(claims)
                 .subject(username)
                 .issuedAt(new Date())
                 .expiration(
                         new Date(
                                 System.currentTimeMillis()
-                                        + 1000L * 60 * 60 * 24
+                                        + jwtExpiration
                         )
                 )
                 .signWith(getSigningKey())
@@ -46,6 +64,17 @@ public class JwtService {
                 .getSubject();
     }
 
+    public String extractRole(
+            String token
+    ) {
+
+        return extractClaims(token)
+                .get(
+                        "role",
+                        String.class
+                );
+    }
+
     public boolean isTokenValid(
             String token,
             String username
@@ -53,7 +82,8 @@ public class JwtService {
 
         return extractUsername(token)
                 .equals(username)
-                && !isTokenExpired(token);
+                &&
+                !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(
@@ -70,7 +100,9 @@ public class JwtService {
     ) {
 
         return Jwts.parser()
-                .verifyWith(getSigningKey())
+                .verifyWith(
+                        getSigningKey()
+                )
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
