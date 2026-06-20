@@ -1,15 +1,36 @@
 package com.smartcampus.backend.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class FacultyRequestDTO {
 
+    @NotBlank(
+            message = "First name is required"
+    )
     private String firstName;
 
+    @NotBlank(
+            message = "Last name is required"
+    )
     private String lastName;
 
+    @NotBlank(
+            message = "Email is required"
+    )
+    @Email(
+            message = "Invalid email format"
+    )
     private String email;
 
+    @NotBlank(
+            message = "Department is required"
+    )
     private String department;
 
+    @NotBlank(
+            message = "Designation is required"
+    )
     private String designation;
 
     public FacultyRequestDTO() {

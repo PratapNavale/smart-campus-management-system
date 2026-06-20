@@ -1,5 +1,6 @@
 package com.smartcampus.backend.service;
 
+import com.smartcampus.backend.exception.ResourceNotFoundException;
 import com.smartcampus.backend.dto.EnrollmentRequestDTO;
 import com.smartcampus.backend.dto.EnrollmentResponseDTO;
 import com.smartcampus.backend.model.Enrollment;
@@ -12,14 +13,18 @@ import java.util.List;
 @Service
 public class EnrollmentService {
 
-    private final EnrollmentRepository
-            enrollmentRepository;
+    private final EnrollmentRepository enrollmentRepository;
+    private final ActivityLogService activityLogService;
 
     public EnrollmentService(
-            EnrollmentRepository enrollmentRepository
+            EnrollmentRepository enrollmentRepository,
+            ActivityLogService activityLogService
     ) {
         this.enrollmentRepository =
                 enrollmentRepository;
+
+        this.activityLogService =
+                activityLogService;
     }
 
     public List<EnrollmentResponseDTO>
@@ -46,7 +51,7 @@ public class EnrollmentService {
 
         if (enrollment == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Enrollment not found"
             );
         }
@@ -79,6 +84,12 @@ public class EnrollmentService {
                 enrollment
         );
 
+        activityLogService.logActivity(
+                1,
+                "ENROLLMENT",
+                "Student enrolled in course"
+        );
+
         return "Enrollment created successfully";
     }
 
@@ -94,7 +105,7 @@ public class EnrollmentService {
 
         if (enrollment == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Enrollment not found"
             );
         }
@@ -115,6 +126,12 @@ public class EnrollmentService {
                 enrollment
         );
 
+        activityLogService.logActivity(
+                1,
+                "ENROLLMENT",
+                "Enrollment updated"
+        );
+
         return "Enrollment updated successfully";
     }
 
@@ -129,13 +146,19 @@ public class EnrollmentService {
 
         if (enrollment == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Enrollment not found"
             );
         }
 
         enrollmentRepository.delete(
                 id
+        );
+
+        activityLogService.logActivity(
+                1,
+                "ENROLLMENT",
+                "Enrollment removed"
         );
 
         return "Enrollment deleted successfully";

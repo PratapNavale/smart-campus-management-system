@@ -1,12 +1,9 @@
 package com.smartcampus.backend.repository;
 
 import com.smartcampus.backend.model.Faculty;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 @Repository

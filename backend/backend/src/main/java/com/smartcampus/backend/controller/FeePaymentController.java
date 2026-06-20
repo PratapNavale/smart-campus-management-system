@@ -3,7 +3,7 @@ package com.smartcampus.backend.controller;
 import com.smartcampus.backend.dto.FeePaymentRequestDTO;
 import com.smartcampus.backend.dto.FeePaymentResponseDTO;
 import com.smartcampus.backend.service.FeePaymentService;
-
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,6 +43,7 @@ public class FeePaymentController {
 
     @PostMapping
     public String createPayment(
+            @Valid
             @RequestBody
             FeePaymentRequestDTO requestDTO
     ) {
@@ -56,6 +57,7 @@ public class FeePaymentController {
     @PutMapping("/{id}")
     public String updatePayment(
             @PathVariable Integer id,
+            @Valid
             @RequestBody
             FeePaymentRequestDTO requestDTO
     ) {

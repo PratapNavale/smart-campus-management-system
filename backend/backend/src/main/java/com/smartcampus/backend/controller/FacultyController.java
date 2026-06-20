@@ -2,11 +2,9 @@ package com.smartcampus.backend.controller;
 
 import com.smartcampus.backend.dto.FacultyRequestDTO;
 import com.smartcampus.backend.dto.FacultyResponseDTO;
-
+import jakarta.validation.Valid;
 import com.smartcampus.backend.service.FacultyService;
-
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -44,6 +42,7 @@ public class FacultyController {
 
     @PostMapping
     public String createFaculty(
+            @Valid
             @RequestBody
             FacultyRequestDTO requestDTO
     ) {
@@ -55,6 +54,7 @@ public class FacultyController {
     @PutMapping("/{id}")
     public String updateFaculty(
             @PathVariable Integer id,
+            @Valid
             @RequestBody
             FacultyRequestDTO requestDTO
     ) {

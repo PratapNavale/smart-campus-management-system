@@ -1,5 +1,6 @@
 package com.smartcampus.backend.service;
 
+import com.smartcampus.backend.exception.ResourceNotFoundException;
 import com.smartcampus.backend.dto.HostelRoomRequestDTO;
 import com.smartcampus.backend.dto.HostelRoomResponseDTO;
 import com.smartcampus.backend.model.HostelRoom;
@@ -12,14 +13,18 @@ import java.util.List;
 @Service
 public class HostelRoomService {
 
-    private final HostelRoomRepository
-            hostelRoomRepository;
+    private final HostelRoomRepository hostelRoomRepository;
+    private final ActivityLogService activityLogService;
 
     public HostelRoomService(
-            HostelRoomRepository hostelRoomRepository
+            HostelRoomRepository hostelRoomRepository,
+            ActivityLogService activityLogService
     ) {
         this.hostelRoomRepository =
                 hostelRoomRepository;
+
+        this.activityLogService =
+                activityLogService;
     }
 
     public List<HostelRoomResponseDTO>
@@ -46,7 +51,7 @@ public class HostelRoomService {
 
         if (room == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Room not found"
             );
         }
@@ -87,6 +92,13 @@ public class HostelRoomService {
                 room
         );
 
+        activityLogService.logActivity(
+                1,
+                "HOSTEL",
+                "Room assigned: "
+                        + room.getRoomNumber()
+        );
+
         return "Room created successfully";
     }
 
@@ -102,7 +114,7 @@ public class HostelRoomService {
 
         if (room == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Room not found"
             );
         }
@@ -131,6 +143,13 @@ public class HostelRoomService {
                 room
         );
 
+        activityLogService.logActivity(
+                1,
+                "HOSTEL",
+                "Room updated: "
+                        + room.getRoomNumber()
+        );
+
         return "Room updated successfully";
     }
 
@@ -145,13 +164,20 @@ public class HostelRoomService {
 
         if (room == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Room not found"
             );
         }
 
         hostelRoomRepository.delete(
                 id
+        );
+
+        activityLogService.logActivity(
+                1,
+                "HOSTEL",
+                "Room deleted: "
+                        + room.getRoomNumber()
         );
 
         return "Room deleted successfully";

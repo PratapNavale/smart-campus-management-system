@@ -3,7 +3,7 @@ package com.smartcampus.backend.controller;
 import com.smartcampus.backend.dto.EnrollmentRequestDTO;
 import com.smartcampus.backend.dto.EnrollmentResponseDTO;
 import com.smartcampus.backend.service.EnrollmentService;
-
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,8 +43,8 @@ public class EnrollmentController {
 
     @PostMapping
     public String createEnrollment(
-            @RequestBody
-            EnrollmentRequestDTO requestDTO
+            @Valid
+            @RequestBody EnrollmentRequestDTO requestDTO
     ) {
 
         return enrollmentService
@@ -56,6 +56,7 @@ public class EnrollmentController {
     @PutMapping("/{id}")
     public String updateEnrollment(
             @PathVariable Integer id,
+            @Valid
             @RequestBody
             EnrollmentRequestDTO requestDTO
     ) {

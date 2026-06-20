@@ -1,5 +1,6 @@
 package com.smartcampus.backend.service;
 
+import com.smartcampus.backend.exception.ResourceNotFoundException;
 import com.smartcampus.backend.dto.AttendanceRequestDTO;
 import com.smartcampus.backend.dto.AttendanceResponseDTO;
 import com.smartcampus.backend.model.Attendance;
@@ -46,7 +47,7 @@ public class AttendanceService {
 
         if (attendance == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Attendance record not found"
             );
         }
@@ -98,7 +99,7 @@ public class AttendanceService {
 
         if (attendance == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Attendance record not found"
             );
         }
@@ -137,7 +138,7 @@ public class AttendanceService {
 
         if (attendance == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Attendance record not found"
             );
         }

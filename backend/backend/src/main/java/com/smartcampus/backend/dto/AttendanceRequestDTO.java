@@ -1,15 +1,30 @@
 package com.smartcampus.backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 
 public class AttendanceRequestDTO {
 
+    @NotNull(
+            message = "Student ID is required"
+    )
     private Integer studentId;
 
+    @NotNull(
+            message = "Course ID is required"
+    )
     private Integer courseId;
 
+    @NotNull(
+            message = "Attendance date is required"
+    )
     private LocalDate attendanceDate;
 
+    @NotBlank(
+            message = "Attendance status is required"
+    )
     private String status;
 
     public AttendanceRequestDTO() {

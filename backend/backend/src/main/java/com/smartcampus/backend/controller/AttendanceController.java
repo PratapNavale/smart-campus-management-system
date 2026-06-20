@@ -3,9 +3,8 @@ package com.smartcampus.backend.controller;
 import com.smartcampus.backend.dto.AttendanceRequestDTO;
 import com.smartcampus.backend.dto.AttendanceResponseDTO;
 import com.smartcampus.backend.service.AttendanceService;
-
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -43,6 +42,7 @@ public class AttendanceController {
 
     @PostMapping
     public String createAttendance(
+            @Valid
             @RequestBody
             AttendanceRequestDTO requestDTO
     ) {
@@ -56,6 +56,7 @@ public class AttendanceController {
     @PutMapping("/{id}")
     public String updateAttendance(
             @PathVariable Integer id,
+            @Valid
             @RequestBody
             AttendanceRequestDTO requestDTO
     ) {

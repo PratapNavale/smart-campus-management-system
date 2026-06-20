@@ -13,11 +13,18 @@ import java.util.List;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final ActivityLogService activityLogService;
 
-    public StudentService(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
+    public StudentService(
+            StudentRepository studentRepository,
+            ActivityLogService activityLogService
+    ) {
+        this.studentRepository =
+                studentRepository;
+
+        this.activityLogService =
+                activityLogService;
     }
-
     public List<StudentResponseDTO> getAllStudents() {
 
         return studentRepository.findAll()
@@ -46,6 +53,15 @@ public class StudentService {
         Student student = convertToEntity(requestDTO);
 
         studentRepository.save(student);
+
+        activityLogService.logActivity(
+                1,
+                "STUDENT",
+                "Student registered: "
+                        + student.getFirstName()
+                        + " "
+                        + student.getLastName()
+        );
 
         return "Student created successfully";
     }
@@ -92,6 +108,15 @@ public class StudentService {
 
         studentRepository.update(existingStudent);
 
+        activityLogService.logActivity(
+                1,
+                "STUDENT",
+                "Student updated: "
+                        + existingStudent.getFirstName()
+                        + " "
+                        + existingStudent.getLastName()
+        );
+
         return "Student updated successfully";
     }
 
@@ -107,6 +132,15 @@ public class StudentService {
         }
 
         studentRepository.delete(id);
+
+        activityLogService.logActivity(
+                1,
+                "STUDENT",
+                "Student deleted: "
+                        + student.getFirstName()
+                        + " "
+                        + student.getLastName()
+        );
 
         return "Student deleted successfully";
     }

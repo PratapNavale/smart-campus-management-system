@@ -1,18 +1,41 @@
 package com.smartcampus.backend.dto;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class FeePaymentRequestDTO {
 
+    @NotNull(
+            message = "Student ID is required"
+    )
     private Integer studentId;
 
+    @NotNull(
+            message = "Amount is required"
+    )
+    @DecimalMin(
+            value = "0.01",
+            message = "Amount must be greater than 0"
+    )
     private BigDecimal amount;
 
+    @NotNull(
+            message = "Payment date is required"
+    )
     private LocalDate paymentDate;
 
+    @NotBlank(
+            message = "Payment type is required"
+    )
     private String paymentType;
 
+    @NotBlank(
+            message = "Payment status is required"
+    )
     private String status;
 
     public FeePaymentRequestDTO() {

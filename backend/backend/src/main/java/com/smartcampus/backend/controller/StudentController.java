@@ -1,5 +1,6 @@
 package com.smartcampus.backend.controller;
 
+import jakarta.validation.Valid;
 import com.smartcampus.backend.dto.StudentRequestDTO;
 import com.smartcampus.backend.dto.StudentResponseDTO;
 import com.smartcampus.backend.service.StudentService;
@@ -32,6 +33,7 @@ public class StudentController {
 
     @PostMapping
     public String createStudent(
+            @Valid
             @RequestBody StudentRequestDTO requestDTO
     ) {
         return studentService.createStudent(requestDTO);
@@ -40,6 +42,7 @@ public class StudentController {
     @PutMapping("/{id}")
     public String updateStudent(
             @PathVariable Integer id,
+            @Valid
             @RequestBody StudentRequestDTO requestDTO
     ) {
         return studentService.updateStudent(id, requestDTO);

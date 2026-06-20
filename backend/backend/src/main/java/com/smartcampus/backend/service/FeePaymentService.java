@@ -1,5 +1,6 @@
 package com.smartcampus.backend.service;
 
+import com.smartcampus.backend.exception.ResourceNotFoundException;
 import com.smartcampus.backend.dto.FeePaymentRequestDTO;
 import com.smartcampus.backend.dto.FeePaymentResponseDTO;
 import com.smartcampus.backend.model.FeePayment;
@@ -12,14 +13,18 @@ import java.util.List;
 @Service
 public class FeePaymentService {
 
-    private final FeePaymentRepository
-            feePaymentRepository;
+    private final FeePaymentRepository feePaymentRepository;
+    private final ActivityLogService activityLogService;
 
     public FeePaymentService(
-            FeePaymentRepository feePaymentRepository
+            FeePaymentRepository feePaymentRepository,
+            ActivityLogService activityLogService
     ) {
         this.feePaymentRepository =
                 feePaymentRepository;
+
+        this.activityLogService =
+                activityLogService;
     }
 
     public List<FeePaymentResponseDTO>
@@ -46,7 +51,7 @@ public class FeePaymentService {
 
         if (payment == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Payment not found"
             );
         }
@@ -87,6 +92,13 @@ public class FeePaymentService {
                 payment
         );
 
+        activityLogService.logActivity(
+                1,
+                "PAYMENT",
+                "Fee payment received: ₹"
+                        + payment.getAmount()
+        );
+
         return "Payment created successfully";
     }
 
@@ -102,7 +114,7 @@ public class FeePaymentService {
 
         if (payment == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Payment not found"
             );
         }
@@ -127,8 +139,12 @@ public class FeePaymentService {
                 requestDTO.getStatus()
         );
 
-        feePaymentRepository.update(
-                payment
+        feePaymentRepository.update(payment);
+
+        activityLogService.logActivity(
+                1,
+                "PAYMENT",
+                "Payment updated"
         );
 
         return "Payment updated successfully";
@@ -145,13 +161,17 @@ public class FeePaymentService {
 
         if (payment == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Payment not found"
             );
         }
 
-        feePaymentRepository.delete(
-                id
+        feePaymentRepository.delete(id);
+
+        activityLogService.logActivity(
+                1,
+                "PAYMENT",
+                "Payment deleted"
         );
 
         return "Payment deleted successfully";

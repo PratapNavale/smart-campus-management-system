@@ -3,7 +3,7 @@ package com.smartcampus.backend.controller;
 import com.smartcampus.backend.dto.HostelRoomRequestDTO;
 import com.smartcampus.backend.dto.HostelRoomResponseDTO;
 import com.smartcampus.backend.service.HostelRoomService;
-
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,6 +43,7 @@ public class HostelRoomController {
 
     @PostMapping
     public String createRoom(
+            @Valid
             @RequestBody
             HostelRoomRequestDTO requestDTO
     ) {
@@ -56,6 +57,7 @@ public class HostelRoomController {
     @PutMapping("/{id}")
     public String updateRoom(
             @PathVariable Integer id,
+            @Valid
             @RequestBody
             HostelRoomRequestDTO requestDTO
     ) {

@@ -1,5 +1,7 @@
 package com.smartcampus.backend.service;
 
+import com.smartcampus.backend.exception.ResourceNotFoundException;
+import com.smartcampus.backend.service.ActivityLogService;
 import com.smartcampus.backend.dto.CourseRequestDTO;
 import com.smartcampus.backend.dto.CourseResponseDTO;
 import com.smartcampus.backend.model.Course;
@@ -13,12 +15,17 @@ import java.util.List;
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final ActivityLogService activityLogService;
 
     public CourseService(
-            CourseRepository courseRepository
+            CourseRepository courseRepository,
+            ActivityLogService activityLogService
     ) {
         this.courseRepository =
                 courseRepository;
+
+        this.activityLogService =
+                activityLogService;
     }
 
     public List<CourseResponseDTO>
@@ -41,7 +48,7 @@ public class CourseService {
 
         if (course == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Course not found"
             );
         }
@@ -82,6 +89,15 @@ public class CourseService {
                 course
         );
 
+        activityLogService.logActivity(
+                1,
+                "COURSE",
+                "Course created: "
+                        + course.getCourseCode()
+                        + " - "
+                        + course.getCourseName()
+        );
+
         return "Course created successfully";
     }
 
@@ -95,7 +111,7 @@ public class CourseService {
 
         if (existingCourse == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Course not found"
             );
         }
@@ -125,6 +141,13 @@ public class CourseService {
                 existingCourse
         );
 
+        activityLogService.logActivity(
+                1,
+                "COURSE",
+                "Course updated: "
+                        + existingCourse.getCourseCode()
+        );
+
         return "Course updated successfully";
     }
 
@@ -137,12 +160,19 @@ public class CourseService {
 
         if (course == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Course not found"
             );
         }
 
         courseRepository.delete(id);
+
+        activityLogService.logActivity(
+                1,
+                "COURSE",
+                "Course deleted: "
+                        + course.getCourseCode()
+        );
 
         return "Course deleted successfully";
     }

@@ -3,7 +3,7 @@ package com.smartcampus.backend.controller;
 import com.smartcampus.backend.dto.CourseRequestDTO;
 import com.smartcampus.backend.dto.CourseResponseDTO;
 import com.smartcampus.backend.service.CourseService;
-
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,6 +41,7 @@ public class CourseController {
 
     @PostMapping
     public String createCourse(
+            @Valid
             @RequestBody
             CourseRequestDTO requestDTO
     ) {
@@ -53,6 +54,7 @@ public class CourseController {
     @PutMapping("/{id}")
     public String updateCourse(
             @PathVariable Integer id,
+            @Valid
             @RequestBody
             CourseRequestDTO requestDTO
     ) {

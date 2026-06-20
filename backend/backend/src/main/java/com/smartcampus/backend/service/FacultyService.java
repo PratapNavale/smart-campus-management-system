@@ -1,5 +1,7 @@
 package com.smartcampus.backend.service;
 
+import com.smartcampus.backend.exception.ResourceNotFoundException;
+
 import com.smartcampus.backend.dto.FacultyRequestDTO;
 import com.smartcampus.backend.dto.FacultyResponseDTO;
 
@@ -15,12 +17,17 @@ import java.util.List;
 public class FacultyService {
 
     private final FacultyRepository facultyRepository;
+    private final ActivityLogService activityLogService;
 
     public FacultyService(
-            FacultyRepository facultyRepository
+            FacultyRepository facultyRepository,
+            ActivityLogService activityLogService
     ) {
         this.facultyRepository =
                 facultyRepository;
+
+        this.activityLogService =
+                activityLogService;
     }
 
     public List<FacultyResponseDTO>
@@ -41,7 +48,7 @@ public class FacultyService {
 
         if (faculty == null) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Faculty not found"
             );
         }
@@ -80,6 +87,15 @@ public class FacultyService {
 
         facultyRepository.save(
                 faculty
+        );
+
+        activityLogService.logActivity(
+                1,
+                "FACULTY",
+                "Faculty added: "
+                        + faculty.getFirstName()
+                        + " "
+                        + faculty.getLastName()
         );
 
         return "Faculty created successfully";
@@ -121,10 +137,19 @@ public class FacultyService {
 
         if (updated == 0) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Faculty not found"
             );
         }
+
+        activityLogService.logActivity(
+                1,
+                "FACULTY",
+                "Faculty updated: "
+                        + faculty.getFirstName()
+                        + " "
+                        + faculty.getLastName()
+        );
 
         return "Faculty updated successfully";
     }
@@ -138,7 +163,17 @@ public class FacultyService {
 
         if (deleted == 0) {
 
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
+                    "Faculty not found"
+            );
+        }
+
+        Faculty faculty =
+                facultyRepository.findById(id);
+
+        if (faculty == null) {
+
+            throw new ResourceNotFoundException(
                     "Faculty not found"
             );
         }

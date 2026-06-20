@@ -144,6 +144,13 @@ public class SecurityConfig {
                                 "ADMIN",
                                 "FACULTY"
                         )
+                        .requestMatchers(
+                                "/api/dashboard/**"
+                        )
+                        .hasAnyRole(
+                                "ADMIN",
+                                "FACULTY"
+                        )
 
                         .anyRequest()
                         .authenticated()
