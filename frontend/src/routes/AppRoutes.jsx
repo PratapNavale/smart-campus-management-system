@@ -1,4 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 
 import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
@@ -6,9 +10,12 @@ import MainLayout from "../layouts/MainLayout";
 import LoginPage from "../pages/auth/LoginPage";
 import AdminDashboard from "../pages/dashboard/AdminDashboard";
 
+import ProtectedRoute from "./ProtectedRoute";
+
 function AppRoutes() {
   return (
     <BrowserRouter>
+
       <Routes>
 
         <Route
@@ -20,14 +27,22 @@ function AppRoutes() {
           }
         />
 
-        <Route element={<MainLayout />}>
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route
-            path="/admin/dashboard"
+            index
             element={<AdminDashboard />}
           />
         </Route>
 
       </Routes>
+
     </BrowserRouter>
   );
 }

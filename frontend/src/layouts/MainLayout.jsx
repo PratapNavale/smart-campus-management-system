@@ -1,6 +1,19 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { getCurrentUser, logout } from "../utils/jwtUtils";
 
 function MainLayout() {
+  const navigate = useNavigate();
+
+  const currentUser = getCurrentUser();
+
+  const username = currentUser?.sub || "Unknown";
+  const role = currentUser?.role || "USER";
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   const menuClass = ({ isActive }) =>
     `block px-4 py-3 rounded-xl transition-all duration-200 ${
       isActive
@@ -12,6 +25,7 @@ function MainLayout() {
     <div className="min-h-screen flex bg-[#F5F5F5]">
       {/* Sidebar */}
       <aside className="w-[280px] bg-[#2B2B2B] text-white flex flex-col">
+
         {/* Logo */}
         <div className="h-[72px] flex items-center px-8 border-b border-[#3A3A3A]">
           <h1 className="text-3xl font-bold tracking-tight">
@@ -89,6 +103,21 @@ function MainLayout() {
             </NavLink>
           </div>
         </div>
+
+        {/* Footer User Info */}
+        <div className="border-t border-[#3A3A3A] p-5">
+          <div className="text-sm text-gray-400">
+            Logged in as
+          </div>
+
+          <div className="font-semibold text-white">
+            {username}
+          </div>
+
+          <div className="text-xs text-gray-500 mt-1">
+            {role}
+          </div>
+        </div>
       </aside>
 
       {/* Main Area */}
@@ -103,13 +132,22 @@ function MainLayout() {
           </div>
 
           <div className="flex items-center gap-4">
+
             <button className="px-4 py-2 border border-[#D4D4D4] rounded-xl hover:bg-[#F5F5F5] transition">
               Dark Mode
             </button>
 
-            <div className="text-sm font-medium">
-              Admin
+            <div className="text-sm font-medium text-[#2B2B2B]">
+              {username}
             </div>
+
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 rounded-xl bg-[#2B2B2B] text-white hover:bg-[#3A3A3A] transition"
+            >
+              Logout
+            </button>
+
           </div>
         </header>
 
