@@ -12,6 +12,8 @@ import AdminDashboard from "../pages/dashboard/AdminDashboard";
 
 import ProtectedRoute from "./ProtectedRoute";
 
+import StudentsPage from "../pages/students/StudentsPage";
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -34,12 +36,18 @@ function AppRoutes() {
               <MainLayout />
             </ProtectedRoute>
           }
+          
         >
           <Route
             index
             element={<AdminDashboard />}
           />
         </Route>
+
+        <Route
+            path="/students"
+            element={<StudentsPage />}
+        />
 
       </Routes>
 
