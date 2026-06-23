@@ -5,6 +5,7 @@ import com.smartcampus.backend.dto.FacultyResponseDTO;
 import jakarta.validation.Valid;
 import com.smartcampus.backend.service.FacultyService;
 import org.springframework.web.bind.annotation.*;
+import com.smartcampus.backend.dto.FacultyRegistrationRequestDTO;
 import java.util.List;
 
 @RestController
@@ -38,6 +39,17 @@ public class FacultyController {
 
         return facultyService
                 .getFacultyById(id);
+    }
+
+    @PostMapping("/register")
+    public String registerFaculty(
+            @Valid
+            @RequestBody
+            FacultyRegistrationRequestDTO dto
+    ) {
+
+        return facultyService
+                .registerFaculty(dto);
     }
 
     @PostMapping

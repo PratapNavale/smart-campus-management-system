@@ -6,6 +6,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+
 import java.util.List;
 
 @Repository
@@ -39,6 +50,51 @@ public class UserRepository {
 
         return users;
     };
+
+    public Integer saveAndReturnId(User user) {
+
+        String sql = """
+            INSERT INTO users
+            (
+                username,
+                password,
+                role
+            )
+            VALUES (?, ?, ?)
+            """;
+
+        KeyHolder keyHolder =
+                new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+
+            PreparedStatement ps =
+                    connection.prepareStatement(
+                            sql,
+                            Statement.RETURN_GENERATED_KEYS
+                    );
+
+            ps.setString(
+                    1,
+                    user.getUsername()
+            );
+
+            ps.setString(
+                    2,
+                    user.getPassword()
+            );
+
+            ps.setString(
+                    3,
+                    user.getRole().name()
+            );
+
+            return ps;
+
+        }, keyHolder);
+
+        return keyHolder.getKey().intValue();
+    }
 
     public List<User> findAll() {
 

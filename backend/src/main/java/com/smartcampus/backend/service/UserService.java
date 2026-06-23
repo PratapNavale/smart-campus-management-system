@@ -1,13 +1,15 @@
 package com.smartcampus.backend.service;
 
+import com.smartcampus.backend.dto.AdminRequestDTO;
 import com.smartcampus.backend.dto.UserRequestDTO;
 import com.smartcampus.backend.dto.UserResponseDTO;
 import com.smartcampus.backend.exception.ResourceNotFoundException;
 import com.smartcampus.backend.model.Role;
 import com.smartcampus.backend.model.User;
 import com.smartcampus.backend.repository.UserRepository;
-import org.springframework.stereotype.Service;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -18,12 +20,16 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final ActivityLogService activityLogService;
+
     public UserService(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            ActivityLogService activityLogService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.activityLogService = activityLogService;
     }
 
     public List<UserResponseDTO> getAllUsers() {
@@ -42,8 +48,10 @@ public class UserService {
                 userRepository.findById(id);
 
         if (user == null) {
+
             throw new ResourceNotFoundException(
-                    "User not found with ID: " + id
+                    "User not found with ID: "
+                            + id
             );
         }
 
@@ -64,14 +72,50 @@ public class UserService {
         return "User created successfully";
     }
 
-    public String deleteUser(Integer id) {
+    public String createAdmin(
+            AdminRequestDTO requestDTO
+    ) {
+
+        User user = new User();
+
+        user.setUsername(
+                requestDTO.getUsername()
+        );
+
+        user.setPassword(
+                passwordEncoder.encode(
+                        requestDTO.getPassword()
+                )
+        );
+
+        user.setRole(
+                Role.ADMIN
+        );
+
+        userRepository.save(user);
+
+        activityLogService.logActivity(
+                1,
+                "ADMIN",
+                "Admin created: "
+                        + requestDTO.getUsername()
+        );
+
+        return "Admin created successfully";
+    }
+
+    public String deleteUser(
+            Integer id
+    ) {
 
         User user =
                 userRepository.findById(id);
 
         if (user == null) {
+
             throw new ResourceNotFoundException(
-                    "User not found with ID: " + id
+                    "User not found with ID: "
+                            + id
             );
         }
 
@@ -135,24 +179,33 @@ public class UserService {
             UserRequestDTO dto
     ) {
 
-        if (dto.getUsername() == null
-                || dto.getUsername().isBlank()) {
+        if (
+                dto.getUsername() == null
+                        ||
+                        dto.getUsername().isBlank()
+        ) {
 
             throw new IllegalArgumentException(
                     "Username is required"
             );
         }
 
-        if (dto.getPassword() == null
-                || dto.getPassword().isBlank()) {
+        if (
+                dto.getPassword() == null
+                        ||
+                        dto.getPassword().isBlank()
+        ) {
 
             throw new IllegalArgumentException(
                     "Password is required"
             );
         }
 
-        if (dto.getRole() == null
-                || dto.getRole().isBlank()) {
+        if (
+                dto.getRole() == null
+                        ||
+                        dto.getRole().isBlank()
+        ) {
 
             throw new IllegalArgumentException(
                     "Role is required"

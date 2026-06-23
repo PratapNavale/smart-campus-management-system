@@ -10,15 +10,17 @@ import MainLayout from "../layouts/MainLayout";
 import LoginPage from "../pages/auth/LoginPage";
 import AdminDashboard from "../pages/dashboard/AdminDashboard";
 
-import ProtectedRoute from "./ProtectedRoute";
-
 import StudentsPage from "../pages/students/StudentsPage";
+
+import ProtectedRoute from "./ProtectedRoute";
 
 function AppRoutes() {
   return (
     <BrowserRouter>
 
       <Routes>
+
+        {/* Login */}
 
         <Route
           path="/"
@@ -29,25 +31,27 @@ function AppRoutes() {
           }
         />
 
+        {/* Protected Admin Area */}
+
         <Route
-          path="/admin/dashboard"
           element={
             <ProtectedRoute>
               <MainLayout />
             </ProtectedRoute>
           }
-          
         >
+
           <Route
-            index
+            path="/admin/dashboard"
             element={<AdminDashboard />}
           />
-        </Route>
 
-        <Route
+          <Route
             path="/students"
             element={<StudentsPage />}
-        />
+          />
+
+        </Route>
 
       </Routes>
 

@@ -1,8 +1,10 @@
 package com.smartcampus.backend.controller;
 
+import com.smartcampus.backend.dto.AdminRequestDTO;
 import com.smartcampus.backend.dto.UserRequestDTO;
 import com.smartcampus.backend.dto.UserResponseDTO;
 import com.smartcampus.backend.service.UserService;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,6 +42,16 @@ public class UserController {
     ) {
 
         return userService.createUser(
+                requestDTO
+        );
+    }
+
+    @PostMapping("/admins")
+    public String createAdmin(
+            @RequestBody AdminRequestDTO requestDTO
+    ) {
+
+        return userService.createAdmin(
                 requestDTO
         );
     }

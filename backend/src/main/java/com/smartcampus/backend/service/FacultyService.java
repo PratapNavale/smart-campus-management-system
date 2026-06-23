@@ -11,23 +11,36 @@ import com.smartcampus.backend.repository.FacultyRepository;
 
 import org.springframework.stereotype.Service;
 
+import com.smartcampus.backend.dto.FacultyRegistrationRequestDTO;
+import com.smartcampus.backend.model.Role;
+import com.smartcampus.backend.model.User;
+import com.smartcampus.backend.repository.UserRepository;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.List;
 
 @Service
 public class FacultyService {
 
     private final FacultyRepository facultyRepository;
+
+    private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
     private final ActivityLogService activityLogService;
 
     public FacultyService(
             FacultyRepository facultyRepository,
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
             ActivityLogService activityLogService
     ) {
-        this.facultyRepository =
-                facultyRepository;
-
-        this.activityLogService =
-                activityLogService;
+        this.facultyRepository = facultyRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.activityLogService = activityLogService;
     }
 
     public List<FacultyResponseDTO>
@@ -56,6 +69,74 @@ public class FacultyService {
         return convertToResponseDTO(
                 faculty
         );
+    }
+
+    public String registerFaculty(
+            FacultyRegistrationRequestDTO dto
+    ) {
+
+        User user = new User();
+
+        user.setUsername(
+                dto.getUsername()
+        );
+
+        user.setPassword(
+                passwordEncoder.encode(
+                        dto.getPassword()
+                )
+        );
+
+        user.setRole(
+                Role.FACULTY
+        );
+
+        Integer generatedUserId =
+                userRepository.saveAndReturnId(
+                        user
+                );
+
+        Faculty faculty =
+                new Faculty();
+
+        faculty.setUserId(
+                generatedUserId
+        );
+
+        faculty.setFirstName(
+                dto.getFirstName()
+        );
+
+        faculty.setLastName(
+                dto.getLastName()
+        );
+
+        faculty.setEmail(
+                dto.getEmail()
+        );
+
+        faculty.setDepartment(
+                dto.getDepartment()
+        );
+
+        faculty.setDesignation(
+                dto.getDesignation()
+        );
+
+        facultyRepository.save(
+                faculty
+        );
+
+        activityLogService.logActivity(
+                generatedUserId,
+                "FACULTY",
+                "Faculty added: "
+                        + faculty.getFirstName()
+                        + " "
+                        + faculty.getLastName()
+        );
+
+        return "Faculty registered successfully";
     }
 
     public String createFaculty(
@@ -215,6 +296,10 @@ public class FacultyService {
 
         dto.setCreatedAt(
                 faculty.getCreatedAt()
+        );
+
+        dto.setUserId(
+                faculty.getUserId()
         );
 
         return dto;

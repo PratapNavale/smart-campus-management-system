@@ -6,6 +6,8 @@ import com.smartcampus.backend.dto.StudentResponseDTO;
 import com.smartcampus.backend.service.StudentService;
 import org.springframework.web.bind.annotation.*;
 
+import com.smartcampus.backend.dto.StudentRegistrationRequestDTO;
+
 import java.util.List;
 
 @RestController
@@ -29,6 +31,16 @@ public class StudentController {
             @PathVariable Integer id
     ) {
         return studentService.getStudentById(id);
+    }
+
+    @PostMapping("/register")
+    public String registerStudent(
+            @RequestBody
+            StudentRegistrationRequestDTO dto
+    ) {
+
+        return studentService
+                .registerStudent(dto);
     }
 
     @PostMapping

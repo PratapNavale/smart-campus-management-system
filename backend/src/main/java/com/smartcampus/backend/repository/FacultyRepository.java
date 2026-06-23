@@ -24,8 +24,8 @@ public class FacultyRepository {
                 Faculty faculty =
                         new Faculty();
 
-                faculty.setFacultyId(
-                        rs.getInt("faculty_id")
+                faculty.setUserId(
+                        rs.getInt("user_id")
                 );
 
                 faculty.setFirstName(
@@ -105,19 +105,21 @@ public class FacultyRepository {
     ) {
 
         String sql = """
-                INSERT INTO faculty
-                (
-                    first_name,
-                    last_name,
-                    email,
-                    department,
-                    designation
-                )
-                VALUES (?, ?, ?, ?, ?)
-                """;
+            INSERT INTO faculty
+            (
+                user_id,
+                first_name,
+                last_name,
+                email,
+                department,
+                designation
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+            """;
 
         return jdbcTemplate.update(
                 sql,
+                faculty.getUserId(),
                 faculty.getFirstName(),
                 faculty.getLastName(),
                 faculty.getEmail(),

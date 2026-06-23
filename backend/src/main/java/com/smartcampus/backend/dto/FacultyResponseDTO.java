@@ -6,6 +6,8 @@ public class FacultyResponseDTO {
 
     private Integer facultyId;
 
+    private Integer userId;
+
     private String firstName;
 
     private String lastName;
@@ -75,5 +77,13 @@ public class FacultyResponseDTO {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 }

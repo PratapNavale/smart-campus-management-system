@@ -6,8 +6,13 @@ function StudentModal({
   onSubmit,
   initialData = null,
 }) {
-  const [formData, setFormData] = useState({
+
+  const isEditMode = !!initialData;
+
+  const getInitialState = () => ({
     userId: "",
+    username: "",
+    password: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -16,88 +21,134 @@ function StudentModal({
     semester: "",
   });
 
+  const [formData, setFormData] =
+    useState(getInitialState());
+
   useEffect(() => {
+
     if (initialData) {
-      setFormData(initialData);
-    } else {
+
       setFormData({
-        userId: "",
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        department: "",
-        semester: "",
+        userId:
+          initialData.userId || "",
+
+        firstName:
+          initialData.firstName || "",
+
+        lastName:
+          initialData.lastName || "",
+
+        email:
+          initialData.email || "",
+
+        phone:
+          initialData.phone || "",
+
+        department:
+          initialData.department || "",
+
+        semester:
+          initialData.semester || "",
+
+        username: "",
+        password: "",
       });
+
+    } else {
+
+      setFormData(
+        getInitialState()
+      );
+
     }
+
   }, [initialData]);
 
   if (!isOpen) return null;
 
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.value,
     });
+
   };
 
   const resetForm = () => {
-  setFormData({
-    userId: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    department: "",
-    semester: "",
-  });
-};
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    setFormData(
+      getInitialState()
+    );
 
-  await onSubmit(formData);
+  };
 
-  resetForm();
-};
+  const handleSubmit = async (
+    e
+  ) => {
+
+    e.preventDefault();
+
+    await onSubmit(formData);
+
+    resetForm();
+
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
 
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl p-6">
+      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl p-6">
 
-        <h2 className="text-2xl font-bold text-[#2B2B2B] mb-6">
-          {initialData ? "Edit Student" : "Add Student"}
+        <h2 className="text-2xl font-bold mb-6">
+          {isEditMode
+            ? "Edit Student"
+            : "Register Student"}
         </h2>
 
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-2 gap-4"
         >
-          <input
-            name="userId"
-            placeholder="User ID"
-            value={formData.userId}
-            onChange={handleChange}
-            className="border border-[#D4D4D4] rounded-xl p-3"
-            required
-          />
 
-          <input
-            name="semester"
-            placeholder="Semester"
-            value={formData.semester}
-            onChange={handleChange}
-            className="border border-[#D4D4D4] rounded-xl p-3"
-            required
-          />
+          {!isEditMode && (
+            <>
+              <input
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+                className="border rounded-xl p-3"
+                required
+              />
+
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="border rounded-xl p-3"
+                required
+              />
+            </>
+          )}
+
+          {isEditMode && (
+            <input
+              type="hidden"
+              name="userId"
+              value={formData.userId}
+            />
+          )}
 
           <input
             name="firstName"
             placeholder="First Name"
             value={formData.firstName}
             onChange={handleChange}
-            className="border border-[#D4D4D4] rounded-xl p-3"
+            className="border rounded-xl p-3"
             required
           />
 
@@ -106,16 +157,17 @@ const handleSubmit = async (e) => {
             placeholder="Last Name"
             value={formData.lastName}
             onChange={handleChange}
-            className="border border-[#D4D4D4] rounded-xl p-3"
+            className="border rounded-xl p-3"
             required
           />
 
           <input
             name="email"
+            type="email"
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className="border border-[#D4D4D4] rounded-xl p-3"
+            className="border rounded-xl p-3"
             required
           />
 
@@ -124,7 +176,7 @@ const handleSubmit = async (e) => {
             placeholder="Phone"
             value={formData.phone}
             onChange={handleChange}
-            className="border border-[#D4D4D4] rounded-xl p-3"
+            className="border rounded-xl p-3"
             required
           />
 
@@ -133,7 +185,19 @@ const handleSubmit = async (e) => {
             placeholder="Department"
             value={formData.department}
             onChange={handleChange}
-            className="border border-[#D4D4D4] rounded-xl p-3 col-span-2"
+            className="border rounded-xl p-3"
+            required
+          />
+
+          <input
+            name="semester"
+            type="number"
+            min="1"
+            max="8"
+            placeholder="Semester"
+            value={formData.semester}
+            onChange={handleChange}
+            className="border rounded-xl p-3"
             required
           />
 
@@ -142,10 +206,10 @@ const handleSubmit = async (e) => {
             <button
               type="button"
               onClick={() => {
-                    resetForm();
-                    onClose();
-                }}
-              className="px-5 py-2 border border-[#D4D4D4] rounded-xl"
+                resetForm();
+                onClose();
+              }}
+              className="px-5 py-2 border rounded-xl"
             >
               Cancel
             </button>
@@ -154,10 +218,13 @@ const handleSubmit = async (e) => {
               type="submit"
               className="px-5 py-2 bg-[#2B2B2B] text-white rounded-xl"
             >
-              Save
+              {isEditMode
+                ? "Update"
+                : "Register"}
             </button>
 
           </div>
+
         </form>
 
       </div>

@@ -5,9 +5,11 @@ export const getStudents = async () => {
   return response.data;
 };
 
-export const createStudent = async (studentData) => {
+export const registerStudent = async (
+  studentData
+) => {
   const response = await api.post(
-    "/students",
+    "/students/register",
     studentData
   );
 

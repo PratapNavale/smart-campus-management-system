@@ -7,6 +7,14 @@ import com.smartcampus.backend.model.Student;
 import com.smartcampus.backend.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
+import com.smartcampus.backend.dto.StudentRegistrationRequestDTO;
+import com.smartcampus.backend.model.Role;
+import com.smartcampus.backend.model.User;
+import com.smartcampus.backend.repository.UserRepository;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -15,16 +23,101 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final ActivityLogService activityLogService;
 
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
     public StudentService(
             StudentRepository studentRepository,
-            ActivityLogService activityLogService
+            ActivityLogService activityLogService,
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder
     ) {
+
         this.studentRepository =
                 studentRepository;
 
         this.activityLogService =
                 activityLogService;
+
+        this.userRepository =
+                userRepository;
+
+        this.passwordEncoder =
+                passwordEncoder;
     }
+
+    @Transactional
+    public String registerStudent(
+            StudentRegistrationRequestDTO dto
+    ) {
+
+        User user = new User();
+
+        user.setUsername(
+                dto.getUsername()
+        );
+
+        user.setPassword(
+                passwordEncoder.encode(
+                        dto.getPassword()
+                )
+        );
+
+        user.setRole(
+                Role.STUDENT
+        );
+
+        Integer generatedUserId =
+                userRepository
+                        .saveAndReturnId(user);
+
+        Student student =
+                new Student();
+
+        student.setUserId(
+                generatedUserId
+        );
+
+        student.setFirstName(
+                dto.getFirstName()
+        );
+
+        student.setLastName(
+                dto.getLastName()
+        );
+
+        student.setEmail(
+                dto.getEmail()
+        );
+
+        student.setPhone(
+                dto.getPhone()
+        );
+
+        student.setDepartment(
+                dto.getDepartment()
+        );
+
+        student.setSemester(
+                dto.getSemester()
+        );
+
+        studentRepository.save(
+                student
+        );
+
+        activityLogService.logActivity(
+                generatedUserId,
+                "STUDENT",
+                "Student registered: "
+                        + dto.getFirstName()
+                        + " "
+                        + dto.getLastName()
+        );
+
+        return "Student registered successfully";
+    }
+
     public List<StudentResponseDTO> getAllStudents() {
 
         return studentRepository.findAll()
@@ -80,7 +173,36 @@ public class StudentService {
             );
         }
 
-        validateStudent(requestDTO);
+        requestDTO.setUserId(
+                existingStudent.getUserId()
+        );
+
+        if (
+                requestDTO.getFirstName() == null
+                        || requestDTO.getFirstName().isBlank()
+        ) {
+            throw new IllegalArgumentException(
+                    "First name is required"
+            );
+        }
+
+        if (
+                requestDTO.getLastName() == null
+                        || requestDTO.getLastName().isBlank()
+        ) {
+            throw new IllegalArgumentException(
+                    "Last name is required"
+            );
+        }
+
+        if (
+                requestDTO.getEmail() == null
+                        || requestDTO.getEmail().isBlank()
+        ) {
+            throw new IllegalArgumentException(
+                    "Email is required"
+            );
+        }
 
         existingStudent.setFirstName(
                 requestDTO.getFirstName()
@@ -187,12 +309,6 @@ public class StudentService {
     private void validateStudent(
             StudentRequestDTO dto
     ) {
-
-        if (dto.getUserId() == null) {
-            throw new IllegalArgumentException(
-                    "User ID is required"
-            );
-        }
 
         if (dto.getFirstName() == null
                 || dto.getFirstName().isBlank()) {

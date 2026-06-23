@@ -2,102 +2,246 @@ import { useEffect, useMemo, useState } from "react";
 
 import {
   getStudents,
-  createStudent,
+  registerStudent,
+  updateStudent,
+  deleteStudent,
 } from "../../api/studentApi";
 
 import StudentModal from "../../components/students/StudentModal";
 
 function StudentsPage() {
-  const [students, setStudents] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
+
+  const [students, setStudents] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [searchTerm, setSearchTerm] =
+    useState("");
 
   const [isModalOpen, setIsModalOpen] =
     useState(false);
+
+  const [editingStudent, setEditingStudent] =
+    useState(null);
 
   useEffect(() => {
     loadStudents();
   }, []);
 
   const loadStudents = async () => {
+
     try {
+
       setLoading(true);
 
-      const data = await getStudents();
+      const data =
+        await getStudents();
 
       setStudents(data);
+
     } catch (error) {
+
       console.error(
         "Failed to load students",
         error
       );
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
   const handleAddStudent = async (
     studentData
   ) => {
+
     try {
-      await createStudent(studentData);
+
+      await registerStudent(
+        studentData
+      );
 
       setIsModalOpen(false);
 
       await loadStudents();
 
       alert(
-        "Student created successfully"
+        "Student registered successfully"
       );
+
     } catch (error) {
+
       console.error(error);
 
       alert(
-        "Failed to create student"
+        "Failed to register student"
       );
+
     }
   };
 
-  const filteredStudents = useMemo(() => {
-    return students.filter((student) => {
+  const handleUpdateStudent =
+  async (studentData) => {
+
+    try {
+
+      const payload = {
+        userId:
+          editingStudent.userId,
+
+        firstName:
+          studentData.firstName,
+
+        lastName:
+          studentData.lastName,
+
+        email:
+          studentData.email,
+
+        phone:
+          studentData.phone,
+
+        department:
+          studentData.department,
+
+        semester:
+          Number(
+            studentData.semester
+          ),
+      };
+
+      await updateStudent(
+        editingStudent.studentId,
+        payload
+      );
+
+      setEditingStudent(null);
+
+      setIsModalOpen(false);
+
+      await loadStudents();
+
+      alert(
+        "Student updated successfully"
+      );
+
+    } catch (error) {
+
+      console.error(
+        error.response?.data ||
+        error
+      );
+
+      alert(
+        error.response?.data
+          ?.message ||
+          "Failed to update student"
+      );
+
+    }
+  };
+
+  const handleDeleteStudent =
+    async (studentId) => {
+
+      const confirmed =
+        window.confirm(
+          "Delete this student?"
+        );
+
+      if (!confirmed) return;
+
+      try {
+
+        await deleteStudent(
+          studentId
+        );
+
+        await loadStudents();
+
+        alert(
+          "Student deleted successfully"
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          "Failed to delete student"
+        );
+
+      }
+    };
+
+  const openAddModal = () => {
+
+    setEditingStudent(null);
+
+    setIsModalOpen(true);
+
+  };
+
+  const openEditModal = (
+    student
+  ) => {
+
+    setEditingStudent(student);
+
+    setIsModalOpen(true);
+
+  };
+
+  const filteredStudents =
+    useMemo(() => {
+
       const search =
         searchTerm.toLowerCase();
 
-      return (
-        student.firstName
-          .toLowerCase()
-          .includes(search) ||
-        student.lastName
-          .toLowerCase()
-          .includes(search) ||
-        student.email
-          .toLowerCase()
-          .includes(search)
+      return students.filter(
+        (student) =>
+          student.firstName
+            ?.toLowerCase()
+            .includes(search) ||
+          student.lastName
+            ?.toLowerCase()
+            .includes(search) ||
+          student.email
+            ?.toLowerCase()
+            .includes(search) ||
+          String(
+            student.userId
+          ).includes(search)
       );
-    });
-  }, [students, searchTerm]);
+
+    }, [
+      students,
+      searchTerm,
+    ]);
 
   return (
     <div className="space-y-6">
 
-      {/* Header */}
-
       <div className="flex items-center justify-between">
 
         <div>
+
           <h1 className="text-4xl font-bold text-[#2B2B2B]">
             Students
           </h1>
 
           <p className="text-gray-500 mt-2">
-            Manage student records.
+            Manage student records
           </p>
+
         </div>
 
         <button
-          onClick={() =>
-            setIsModalOpen(true)
-          }
+          onClick={openAddModal}
           className="
             px-5
             py-3
@@ -105,16 +249,13 @@ function StudentsPage() {
             text-white
             rounded-xl
             hover:bg-[#3A3A3A]
-            transition-all
-            duration-200
+            transition
           "
         >
-          Add Student
+          Register Student
         </button>
 
       </div>
-
-      {/* Student Table Card */}
 
       <div
         className="
@@ -127,11 +268,9 @@ function StudentsPage() {
         "
       >
 
-        {/* Search */}
-
         <input
           type="text"
-          placeholder="Search by name or email..."
+          placeholder="Search by User ID, Name or Email..."
           value={searchTerm}
           onChange={(e) =>
             setSearchTerm(
@@ -144,57 +283,62 @@ function StudentsPage() {
             rounded-xl
             border
             border-[#D4D4D4]
-            focus:outline-none
-            focus:ring-2
-            focus:ring-[#2B2B2B]
             mb-6
           "
         />
 
-        {/* Loading State */}
-
         {loading ? (
-          <div className="text-center py-10 text-gray-500">
+
+          <div className="text-center py-10">
             Loading students...
           </div>
-        ) : filteredStudents.length === 0 ? (
-          <div className="text-center py-10 text-gray-500">
-            No students found.
+
+        ) : filteredStudents.length ===
+          0 ? (
+
+          <div className="text-center py-10">
+            No students found
           </div>
+
         ) : (
+
           <div className="overflow-x-auto">
 
             <table className="w-full">
 
               <thead>
 
-                <tr className="border-b border-[#D4D4D4]">
+                <tr className="border-b">
 
-                  <th className="text-left py-4 px-3 font-semibold text-[#2B2B2B]">
+                  <th className="p-3 text-left">
                     Student ID
                   </th>
 
-                  <th className="text-left py-4 px-3 font-semibold text-[#2B2B2B]">
+                  <th className="p-3 text-left">
+                    User ID
+                  </th>
+
+                  <th className="p-3 text-left">
                     Name
                   </th>
 
-                  <th className="text-left py-4 px-3 font-semibold text-[#2B2B2B]">
+                  <th className="p-3 text-left">
                     Email
                   </th>
 
-                  <th className="text-left py-4 px-3 font-semibold text-[#2B2B2B]">
+                  <th className="p-3 text-left">
                     Department
                   </th>
 
-                  <th className="text-left py-4 px-3 font-semibold text-[#2B2B2B]">
+                  <th className="p-3 text-left">
                     Semester
                   </th>
 
-                  <th className="text-left py-4 px-3 font-semibold text-[#2B2B2B]">
+                  <th className="p-3 text-left">
                     Phone
                   </th>
 
-                  <th className="text-left py-4 px-3 font-semibold text-[#2B2B2B]">
+                  <th className="p-3 text-left">
                     Actions
                   </th>
 
@@ -206,21 +350,26 @@ function StudentsPage() {
 
                 {filteredStudents.map(
                   (student) => (
+
                     <tr
                       key={
                         student.studentId
                       }
                       className="
                         border-b
-                        border-[#EEEEEE]
-                        hover:bg-[#F8F8F8]
-                        transition
+                        hover:bg-gray-50
                       "
                     >
 
                       <td className="p-3">
                         {
                           student.studentId
+                        }
+                      </td>
+
+                      <td className="p-3 font-semibold">
+                        {
+                          student.userId
                         }
                       </td>
 
@@ -234,7 +383,9 @@ function StudentsPage() {
                       </td>
 
                       <td className="p-3">
-                        {student.email}
+                        {
+                          student.email
+                        }
                       </td>
 
                       <td className="p-3">
@@ -250,7 +401,9 @@ function StudentsPage() {
                       </td>
 
                       <td className="p-3">
-                        {student.phone}
+                        {
+                          student.phone
+                        }
                       </td>
 
                       <td className="p-3">
@@ -258,27 +411,34 @@ function StudentsPage() {
                         <div className="flex gap-2">
 
                           <button
+                            onClick={() =>
+                              openEditModal(
+                                student
+                              )
+                            }
                             className="
                               px-3
                               py-1
                               rounded-lg
-                              bg-[#D4D4D4]
-                              hover:bg-[#B3B3B3]
-                              transition
+                              bg-gray-300
+                              hover:bg-gray-400
                             "
                           >
                             Edit
                           </button>
 
                           <button
+                            onClick={() =>
+                              handleDeleteStudent(
+                                student.studentId
+                              )
+                            }
                             className="
                               px-3
                               py-1
                               rounded-lg
                               bg-[#2B2B2B]
                               text-white
-                              hover:bg-[#3A3A3A]
-                              transition
                             "
                           >
                             Delete
@@ -289,6 +449,7 @@ function StudentsPage() {
                       </td>
 
                     </tr>
+
                   )
                 )}
 
@@ -297,19 +458,27 @@ function StudentsPage() {
             </table>
 
           </div>
+
         )}
 
       </div>
 
-      {/* Student Modal */}
-
       <StudentModal
         isOpen={isModalOpen}
-        onClose={() =>
-          setIsModalOpen(false)
-        }
+        onClose={() => {
+
+          setIsModalOpen(false);
+
+          setEditingStudent(null);
+
+        }}
         onSubmit={
-          handleAddStudent
+          editingStudent
+            ? handleUpdateStudent
+            : handleAddStudent
+        }
+        initialData={
+          editingStudent
         }
       />
 

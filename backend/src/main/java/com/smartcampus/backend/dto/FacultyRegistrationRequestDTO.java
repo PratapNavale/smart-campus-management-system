@@ -1,42 +1,49 @@
-package com.smartcampus.backend.model;
+package com.smartcampus.backend.dto;
 
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
-public class Faculty {
+public class FacultyRegistrationRequestDTO {
 
-    private Integer facultyId;
+    @NotBlank
+    private String username;
 
-    private Integer userId;
+    @NotBlank
+    private String password;
 
+    @NotBlank
     private String firstName;
 
+    @NotBlank
     private String lastName;
 
+    @NotBlank
+    @Email
     private String email;
 
+    @NotBlank
     private String department;
 
+    @NotBlank
     private String designation;
 
-    private LocalDateTime createdAt;
-
-    public Faculty() {
+    public FacultyRegistrationRequestDTO() {
     }
 
-    public Integer getFacultyId() {
-        return facultyId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setFacultyId(Integer facultyId) {
-        this.facultyId = facultyId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getPassword() {
+        return password;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {
@@ -77,13 +84,5 @@ public class Faculty {
 
     public void setDesignation(String designation) {
         this.designation = designation;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 }
